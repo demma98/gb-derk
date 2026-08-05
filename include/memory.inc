@@ -7,15 +7,23 @@ DEF IN_UP     EQU %00000100
 DEF IN_LEFT   EQU %00000010
 DEF IN_RIGHT  EQU %00000001
 
+DEF IN_RESET  EQU IN_START + IN_SELECT + IN_B + IN_A
+
+
+DEF SP_INIT   EQU $DFFF
+
+
 DEF INPUT_MEMORY  EQU $FF80
 DEF INPUT_C   EQU INPUT_MEMORY + $00
 DEF INPUT_N   EQU INPUT_MEMORY + $01
+
 
 DEF WAIT_T    EQU $FF88
 DEF SKIP_L    EQU $FF89
 
 DEF COPY_HIGH    EQU $FF8A
 DEF COPY_LOW  EQU $FF8B
+
 
 DEF hFADE_DATA   EQU $FF90
 DEF FADE_C    EQU hFADE_DATA + $00
@@ -35,4 +43,19 @@ DEF BOARD_TEMP    EQU hBOARD_INFO + $03
   ; offsetf of the board
 DEF BOARD_X_OFF   EQU hBOARD_INFO + $04  ; offsets in pixels for scroll
 DEF BOARD_Y_OFF   EQU hBOARD_INFO + $05
+DEF WIN_X_OFF     EQU hBOARD_INFO + $06  ; offsets for the window layer
+DEF WIN_Y_OFF     EQU hBOARD_INFO + $07
 
+
+DEF wSHIP_DATA  EQU $FFD0
+  ; coordinates of the ship in pixels
+DEF SHIP_Y      EQU wSHIP_DATA + $00
+DEF SHIP_X      EQU wSHIP_DATA + $01
+DEF SHIP_T      EQU wSHIP_DATA + $02
+DEF SHIP_F      EQU wSHIP_DATA + $03
+  ; coordinates of the ship in tiles
+DEF SHIP_X_T    EQU wSHIP_DATA + $04
+DEF SHIP_Y_T    EQU wSHIP_DATA + $05
+  ; tile the ship should restart on
+DEF SHIP_X_R    EQU wSHIP_DATA + $06
+DEF SHIP_Y_R    EQU wSHIP_DATA + $07

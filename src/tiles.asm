@@ -29,6 +29,7 @@ TilesBGEnd:
 TilesShared:
 
 INCLUDE "include/tiles/tiles_game.asm"
+INCLUDE "include/tiles/dialogue_box.asm"
 
 TilesSharedEnd:
 

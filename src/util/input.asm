@@ -31,6 +31,15 @@ ReadInput:  ; returns current inputs [a]
   ld a, b
   ld [INPUT_C], a ; save current inputs
 
+    ; reset game ir IN_RESET is pressed
+  and IN_RESET
+  cp IN_RESET
+  jr nz, .skip_reset
+
+  jp Reset
+
+  .skip_reset
+
   ret
   
 

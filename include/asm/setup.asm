@@ -26,13 +26,21 @@ SetupTileData:
 
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BG8800
     ldh [rLCDC], a   ; background on, objects on; BG uses $9000
-
+    
         ; fill shared tile data
     halt ; wait for vblank
+    
+    ld a, LCDCF_OFF
+    ldh [rLCDC], a    ; lcd off
+    
     ld hl, TilesShared
     ld de, _VRAM8800
     ld bc, TilesSharedEnd - TilesShared
-    call CopyDataL   ; copy tile data to vram
+    call CopyDataL   ; copy tile data to 
+    
+    ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BG8800
+    ldh [rLCDC], a   ; background on, objects on; BG uses $9000
+
 
 ClearMaps:
     halt
@@ -45,7 +53,7 @@ ClearMaps:
 
     ld b, $04
     .clear_map_loop_0
-    ld c, $FF
+    ld c, $00
     .clear_map_loop_1
     ld [hl+], a
     dec c
@@ -55,6 +63,14 @@ ClearMaps:
 
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BG8800
     ldh [rLCDC], a   ; background on, objects on; BG uses $9000
+
+
+ClearOAM:
+    halt
+
+    ld hl, _OAMRAM
+    ld b, $A0
+    call ClearData
 
 
 SetupEnd:

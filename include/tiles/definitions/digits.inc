@@ -1,0 +1,2 @@
+DEF G_DIGITS  EQU $1B
+

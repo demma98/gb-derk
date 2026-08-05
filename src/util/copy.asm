@@ -6,6 +6,7 @@ EXPORT CopyData
 EXPORT CopyDataL
 EXPORT CopyDataT
 EXPORT ClearData
+EXPORT FillData
 
 CopyData:   ; data from [hl], data to [de], length [b]
     .copy_data_loop
@@ -88,6 +89,7 @@ CopyDataT:   ; data from [hl], data to [de], length [b]
 
 ClearData:    ; data at [hl], length [b]
     ld a, $00
+FillData:     ; data at [hl], length [b]
     .clear_data_loop
     ld [hl+], a
     dec b
