@@ -83,6 +83,7 @@ DemmaFadeOutLoop:
 Demma_manageInputs:
     call ReadInput
 
+    ldh a, [INPUT_N]
     cp IN_START
     jp nz, .skip
 
@@ -106,8 +107,8 @@ DemmaClear:
     
 
 T_Demma:
-db "DEMMA 98\n\n"
-db "PRESENTS"
+    db "DEMMA 98\n\n"
+    db "PRESENTS"
 T_DemmaEnd:
 
 

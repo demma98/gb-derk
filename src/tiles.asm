@@ -3,8 +3,8 @@ Section "Tile data", ROMX
 EXPORT Tiles
 EXPORT TilesBG
 EXPORT TilesBGEnd
-EXPORT TilesGame
-EXPORT TilesGameEnd
+EXPORT TilesShared
+EXPORT TilesSharedEnd
 EXPORT TilesEnd
 
 Tiles:
@@ -26,16 +26,11 @@ INCLUDE "include/tiles/digits.asm"
 TilesBGEnd:
 
 
-TilesGame:
-    dw `00000000    ; blank $00
-    dw `00000000
-    dw `00000000
-    dw `00000000
-    dw `00000000
-    dw `00000000
-    dw `00000000
-    dw `00000000
-TilesGameEnd:
+TilesShared:
+
+INCLUDE "include/tiles/tiles_game.asm"
+
+TilesSharedEnd:
 
 TilesEnd:
 

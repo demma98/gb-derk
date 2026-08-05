@@ -5,6 +5,7 @@ TitleCardSetup:
 TitleCardFadeInLoop:
   halt
 
+  call TitleCard_manageInputs
     
   ld hl, P_FadeInW
   call Fading
@@ -27,6 +28,8 @@ TitleCardJump:
 
 TitleCardLoop:
   halt
+
+  call TitleCard_manageInputs
 
   jp TitleCardLoop
 
@@ -66,13 +69,43 @@ TitleCardSetupTiles:
 
   ret
 
+
+TitleCard_manageInputs:
+  call ReadInput
+
+  ldh a, [INPUT_N]
+  cp IN_START
+  jp nz, .skip
+
+  call TitleCardClear
+  pop bc
+  jp GameSetup
+
+  .skip
+  ret
+
+TitleCardClear:
+  ld a, %00000000
+  ldh [rBGP], a
+
+  ; clear copyright text
+  ld hl, _SCRN0 + $1C0 + $02
+  ld b, $10
+  call ClearData
+  ld hl, _SCRN0 + $1E0 + $02
+  ld b, $10
+  call ClearData
+  
+  ret
+
+
 T_Derk:
-db "DERK"
+  db "DERK"
 T_DerkEnd:
 
 T_Copyright:
-db "DEMMA 98 STUDIOS\n"
-db "MADE IN 2026"
+  db "DEMMA 98 STUDIOS\n"
+  db "MADE IN 2026"
 T_CopyrightEnd:
 
 

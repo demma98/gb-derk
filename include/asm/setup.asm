@@ -27,6 +27,13 @@ SetupTileData:
     ld a, LCDCF_ON | LCDCF_BGON | LCDCF_BG8800
     ldh [rLCDC], a   ; background on, objects on; BG uses $9000
 
+        ; fill shared tile data
+    halt ; wait for vblank
+    ld hl, TilesShared
+    ld de, _VRAM8800
+    ld bc, TilesSharedEnd - TilesShared
+    call CopyDataL   ; copy tile data to vram
+
 ClearMaps:
     halt
     

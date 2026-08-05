@@ -7,7 +7,7 @@ Section "Input", ROM0
 
 EXPORT ReadInput
 
-ReadInput:
+ReadInput:  ; returns current inputs [a]
 
   ld a, JOYP_GET_BUTTONS
   call .readHalf
@@ -17,8 +17,19 @@ ReadInput:
   call .readHalf
   swap a
   xor a, b
+  ld b, a
 
-  ld [INPUT_C], a
+
+  ld a, JOYP_GET_NONE
+  ldh [rJOYP], a ; release inputs
+
+
+  ld a, [INPUT_C]
+  xor a, b
+  and a, b
+  ld [INPUT_N], a ; save new inputs
+  ld a, b
+  ld [INPUT_C], a ; save current inputs
 
   ret
   

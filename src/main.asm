@@ -17,10 +17,7 @@ INCLUDE "include/asm/demma.asm"
 
 INCLUDE "include/asm/titleCard.asm"
 
-MainLoop:
+MainLoop:    ; just to catch code
     halt    ; wait for vblank
-
-    ;call RenderCursor
-
     jr MainLoop
 
