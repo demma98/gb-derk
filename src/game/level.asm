@@ -24,6 +24,12 @@ LoadLevel:  ; number of the level and store it on b
   ld b, a
 
   call LevelGetHeader
+
+  ld a, d
+  ldh [BOARD_LEVEL_1], a
+  ld a, e
+  ldh [BOARD_LEVEL_0], a
+  
   call LevelStoreInfo
   call LevelStoreData
   call LevelCalcEmptyBlocks
@@ -33,9 +39,12 @@ LoadLevel:  ; number of the level and store it on b
   ret
 
 
-LevelGetHeader:  ; number of the level [b], return address in [hl]
+LevelGetHeader:  ; number of the level [b], return address in [hl], return decimal representation in [de]
   inc b
   ld hl, LevelData
+
+  ld d, $00
+  ld e, $00
 
   .levelLoop
 
@@ -45,6 +54,17 @@ LevelGetHeader:  ; number of the level [b], return address in [hl]
   ld a, $00
   adc a, h
   ld h, a
+
+    ; calculate decimal representation here
+  inc e
+  ld a, e
+  cp $0A
+  jr nz, .skip_2nd_digit
+
+  inc d
+  ld e, $00
+
+  .skip_2nd_digit
 
   dec b
   jp nz, .levelLoop

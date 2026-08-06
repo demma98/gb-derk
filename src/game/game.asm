@@ -6,7 +6,7 @@ INCLUDE "include/tiles/definitions/digits.inc"
 
 Section "Game", ROM0
 
-DEF MAX_LEVEL  EQU  $08
+DEF MAX_LEVEL  EQU  10
 
 EXPORT GameStartFrom0
 EXPORT GameSetup
@@ -30,6 +30,7 @@ GameSetup:
   ld [rOBP0], a
   ld [rOBP1], a
   
+  
   call GameDrawDialogueBox
   call GameSetOffsets
 
@@ -44,7 +45,7 @@ GameSetup:
 
   ld a, %11100100
   ld [rBGP], a
-  ld a, %11010000
+  ld a, %11010001
   ld [rOBP0], a
 
 GameLoop:
@@ -99,9 +100,12 @@ GameDrawDialogueBox:
   call CopyDataT
 
     ; draw level digits
-  ldh a, [BOARD_LEVEL]
+  ldh a, [BOARD_LEVEL_1]
   add G_DIGITS
   ld [_SCRN1 + $22 + T_LevelEnd - T_Level], a
+  ldh a, [BOARD_LEVEL_0]
+  add G_DIGITS
+  ld [_SCRN1 + $23 + T_LevelEnd - T_Level], a
   ret
 
 

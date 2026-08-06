@@ -1,3 +1,4 @@
+EXPORT TitleCardJump
 
 TitleCardSetup:
   call TitleCardSetupTiles
