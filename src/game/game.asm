@@ -6,38 +6,59 @@ INCLUDE "include/tiles/definitions/digits.inc"
 
 Section "Game", ROM0
 
+DEF MAX_LEVEL  EQU  $08
+
+EXPORT GameStartFrom0
 EXPORT GameSetup
 
+GameStartFrom0:
+  xor a ; ld a, $00
+  ld a, $00
+  ldh [BOARD_LEVEL], a
+
+GameStartFromX:
+  call LevelDrawBackdrop
+
 GameSetup:
-  ld b, $00
 
   call LoadLevel
-
-  halt  ; wait for vblank
-  call GameDrawDialogueBox
-  call GameSetGraphics
-  call GameSetOffsets
   
-  ld a, %11100100
+  halt  ; wait for vblank
+  
+  ld a, %00000000
   ld [rBGP], a
   ld [rOBP0], a
+  ld [rOBP1], a
+  
+  call GameDrawDialogueBox
+  call GameSetOffsets
 
   ld a, $07
   ldh [WIN_X_OFF], a
   ld a, $7C
   ldh [WIN_Y_OFF], a
 
+  call GameSetGraphics
+
   call ShipSetup
+
+  ld a, %11100100
+  ld [rBGP], a
+  ld a, %11010000
+  ld [rOBP0], a
 
 GameLoop:
   halt
 
   call Game_manageInputs
   call GameSetOffsets
-  
+
+  call FillBlock_G
   call ShipDraw
   
   call ShipLogic
+
+  call GameCheckWin
 
   jp GameLoop
 
@@ -105,6 +126,64 @@ GameSetOffsets:
 Game_manageInputs:
   call ReadInput
   ret
+
+
+GameCheckWin:
+  ldh a, [EMPTY_BLOCKS_R]
+  ld b, a
+  ldh a, [FILLED_BLOCKS]
+  cp b
+  jp nz, .skip_win
+
+  call ShipLogic
+  call ShipDraw
+  call FillBlock_G
+  call LevelClearBoard
+
+  ldh a, [BOARD_LEVEL]
+  inc a
+  ldh [BOARD_LEVEL], a
+  cp MAX_LEVEL
+
+  jr nz, .jump_to_next_level
+
+  pop bc
+  jp WinJump
+
+  .jump_to_next_level
+  pop bc
+  jp GameFadeOutSetup
+
+  .skip_win
+  ret
+
+
+GameFadeOutSetup:
+    ; setup fade animation
+  ld a, FADE_C_SET - 1
+  ldh [FADE_C], a
+  ld a, FADE_T_SET
+  ldh [FADE_T], a
+  ld a, $08
+  ldh [FADE_T_L], a
+
+  xor a ; ld a, $00
+  ld [_OAMRAM], a ; hide ship
+  
+
+GameFadeOutLoop:
+  halt
+
+  call ReadInput
+  
+  ld hl, P_FadeOutB
+  call Fading
+
+  ldh a, [FADE_C]
+  or $00
+  jr nz, GameFadeOutLoop
+
+  jp GameSetup
 
 
 T_Level:

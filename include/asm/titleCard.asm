@@ -46,9 +46,19 @@ TitleCardSetupTiles:
   ld b, T_DerkEnd - T_Derk
   call CopyDataT
   
+  ld hl, T_CX16_Maze
+  ld de, _SCRN0 + $140 + $06
+  ld b, T_CX16_MazeEnd - T_CX16_Maze
+  call CopyDataT
+  
   ld hl, T_Copyright
-  ld de, _SCRN0 + $1C0 + $02
+  ld de, _SCRN0 + $1A0 + $02
   ld b, T_CopyrightEnd - T_Copyright
+  call CopyDataT
+  
+  ld hl, T_Copyright_Year
+  ld de, _SCRN0 + $200 + $02
+  ld b, T_Copyright_YearEnd - T_Copyright_Year
   call CopyDataT
 
 
@@ -79,7 +89,7 @@ TitleCard_manageInputs:
 
   call TitleCardClear
   pop bc
-  jp GameSetup
+  jp GameStartFrom0
 
   .skip
   ret
@@ -103,10 +113,18 @@ T_Derk:
   db "DERK"
 T_DerkEnd:
 
+T_CX16_Maze:
+  db "CX16 MAZE"
+T_CX16_MazeEnd:
+
 T_Copyright:
   db "DEMMA 98 STUDIOS\n"
-  db "MADE IN 2026"
+  db "ORIGINAL GAME BY\n"
+  db "  JIMMY DANSBO"
 T_CopyrightEnd:
+T_Copyright_Year:
+  db "  MADE IN 2026"
+T_Copyright_YearEnd:
 
 
 TitleCardEnd:
