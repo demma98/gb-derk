@@ -2,7 +2,7 @@ EXPORT TilesDialogueBox
 EXPORT TilesDialogueBoxEnd
 
 TilesDialogueBox:
-    dw `23333333    ; up-left
+    dw `13333333    ; up-left
     dw `33110000
     dw `31000000
     dw `31000000
@@ -20,7 +20,7 @@ TilesDialogueBox:
     dw `00000000
     dw `00000000
     
-    dw `33333332    ; up-right
+    dw `33333331    ; up-right
     dw `00000033
     dw `00000003
     dw `00000003

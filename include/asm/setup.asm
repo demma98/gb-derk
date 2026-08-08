@@ -8,6 +8,9 @@ Setup:
     ldh [rIF], a    ; clean garbage from interrupts
     ei  ; enable interrupts
 
+        ; reset stack
+    ld sp, SP_INIT
+
 SetupTileData:
     halt    ; wait vblank
 

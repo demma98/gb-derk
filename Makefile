@@ -6,7 +6,7 @@ PROJECT_TYPE := gb
 
 
 # rom
-ROM_TITLE 	:= test	# truncated to 15 characters
+ROM_TITLE 	:= DERK	# truncated to 15 characters
 ROM_VERSION := 0x00
 
 SOURCE_DIR	:= ./src

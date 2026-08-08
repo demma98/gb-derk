@@ -3,6 +3,14 @@ EXPORT TitleCardJump
 TitleCardSetup:
   call TitleCardSetupTiles
 
+  ; setup fade animation
+  ld a, FADE_C_SET
+  ldh [FADE_C], a
+  ld a, FADE_T_SET
+  ldh [FADE_T], a
+  ld a, $02
+  ldh [FADE_T_L], a
+
 TitleCardFadeInLoop:
   halt
 
@@ -69,15 +77,6 @@ TitleCardSetupTiles:
   ld a, $00
   ldh [rSCX], a
   ldh [rSCY], a
-  
-  ; setup fade animation
-  ld a, FADE_C_SET
-  ldh [FADE_C], a
-  ld a, FADE_T_SET
-  ldh [FADE_T], a
-  ld a, $02
-  ldh [FADE_T_L], a
-
   ret
 
 
@@ -120,8 +119,6 @@ T_CX16_MazeEnd:
 
 T_Copyright:
   db "DEMMA 98 STUDIOS\n"
-  db "ORIGINAL GAME BY\n"
-  db "  JIMMY DANSBO"
 T_CopyrightEnd:
 T_Copyright_Year:
   db "  MADE IN 2026"

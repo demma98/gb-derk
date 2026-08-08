@@ -21,6 +21,9 @@ Fading:
 
   add l
   ld l, a
+  ld a, $00
+  adc h
+  ld h, a
   ld a, [hl]
   ldh [rBGP], a   ; set background palette
 

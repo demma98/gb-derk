@@ -14,11 +14,11 @@ SECTION "Header", ROM0[$100]
 	ds $150 - @, 0 ; make room for the header
 
 Reset:
-    ld sp, SP_INIT
 
 INCLUDE "include/asm/setup.asm"
 
 INCLUDE "include/asm/demma.asm"
+INCLUDE "include/asm/original_by.asm"
 
 INCLUDE "include/asm/titleCard.asm"
 

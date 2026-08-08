@@ -27,6 +27,7 @@ ShipSetup:
   ldh a, [SHIP_X_R]
   ld e, a
   ldh [SHIP_X_T], a
+  ldh [SHIP_X_O], a
   rlc a
   rlc a
   rlc a
@@ -35,6 +36,7 @@ ShipSetup:
   ldh a, [SHIP_Y_R]
   ld d, a
   ldh [SHIP_Y_T], a
+  ldh [SHIP_Y_O], a
 
     ; fill the starting block
   call FillBlock
@@ -56,7 +58,7 @@ ShipDraw:
 ShipLogic:
   call ShipMove
   call ShipUpdateOffset
-  
+
   ret
 
 
@@ -219,10 +221,69 @@ ShipMove:
   .skip_move
 
   ret
+  
   .stop_moving
   ld a, SHIP_STATIC
   ldh [SHIP_DIRECTION], a
 
+    ; skip moves increse if the ship hasn't moved
+  ld hl, SHIP_X_O
+  ldh a, [SHIP_X_T]
+  cp [hl]  ; cp [SHIP_X_O]
+  jr nz, .moves_increse
+  ld hl, SHIP_Y_O
+  ldh a, [SHIP_Y_T]
+  cp [hl]  ; cp [SHIP_Y_O]
+  jr nz, .moves_increse
+
+  jr .skip_moves_increse
+  
+  .moves_increse
+  ld hl, SHIP_MOVES_0
+  ld b, $00
+  call MovesIncrese
+  
+  ld a, $10
+  ldh [MOVES_UPDATE], a
+  .skip_moves_increse
+
+    ; update old coordinate values
+  ldh a, [SHIP_X_T]
+  ldh [SHIP_X_O], a
+  ldh a, [SHIP_Y_T]
+  ldh [SHIP_Y_O], a
+  ret
+
+
+MovesIncrese:
+  ld a, b
+  cp $05
+  jr z, .skip
+
+
+  inc b
+  ld a, [hl]
+  inc a
+  cp $0A
+  jr nz, .skip_reset_digit
+
+  dec hl
+  call MovesIncrese
+  inc hl
+
+  ld a, b
+  cp $05
+  jr nz, .max_not_reached
+
+  ld a, $09
+  jr .skip_reset_digit
+
+  .max_not_reached
+  xor a ; ld a, $00
+  .skip_reset_digit
+  ld [hl], a
+
+  .skip
   ret
 
 

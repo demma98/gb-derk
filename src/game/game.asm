@@ -8,14 +8,26 @@ Section "Game", ROM0
 
 DEF MAX_LEVEL  EQU  10
 
+DEF NO_WIN    EQU $00
+DEF WIN_NEXT   EQU $01
+DEF WIN_LAST   EQU $02
+
 EXPORT GameStartFrom0
 EXPORT GameSetup
+EXPORT MovesDrawText
+EXPORT MovesDrawTextToHl
 
 GameStartFrom0:
-  xor a ; ld a, $00
-  ld a, $00
+  xor a
+  ;ld a, $09
+  
   ldh [BOARD_LEVEL], a
-
+  xor a ; ld a, $00
+  ldh [SHIP_MOVES_3], a
+  ldh [SHIP_MOVES_2], a
+  ldh [SHIP_MOVES_1], a
+  ldh [SHIP_MOVES_0], a
+  
 GameStartFromX:
   call LevelDrawBackdrop
 
@@ -29,7 +41,8 @@ GameSetup:
   ld [rBGP], a
   ld [rOBP0], a
   ld [rOBP1], a
-  
+
+  ldh [PAUSE], a
   
   call GameDrawDialogueBox
   call GameSetOffsets
@@ -45,21 +58,45 @@ GameSetup:
 
   ld a, %11100100
   ld [rBGP], a
-  ld a, %11010001
+  ld a, %11000101
   ld [rOBP0], a
+
+  ld a, NO_WIN
+  ldh [NEXT_LEVEL], a
 
 GameLoop:
   halt
 
   call Game_manageInputs
+  call Game_managePause
   call GameSetOffsets
+
+  ldh a, [MOVES_UPDATE]
+  cp $00
+  jr z, .skip_moves_update
+  call MovesDrawText
+  .skip_moves_update
 
   call FillBlock_G
   call ShipDraw
+
+  ldh a, [PAUSE]
+  cp $00
+  jr nz, .skip_logic
   
   call ShipLogic
 
   call GameCheckWin
+
+  ldh a, [NEXT_LEVEL]
+  cp NO_WIN
+  jr z, .no_win
+
+  jp GameFadeOutSetup
+  
+  .no_win
+  .skip_logic
+
 
   jp GameLoop
 
@@ -93,19 +130,37 @@ GameDrawDialogueBox:
   ld hl, _SCRN1 + $41
   call FillData
 
+  call GameDrawText
+  ret
+
+
+GameDrawText:
+    ; clear space
+  ld hl, _SCRN1 + $21
+  ld b, $10
+  call ClearData
+  
     ; draw "LEVEL" text
   ld hl, T_Level
   ld de, _SCRN1 + $21
   ld b, T_LevelEnd - T_Level
   call CopyDataT
-
-    ; draw level digits
+  
   ldh a, [BOARD_LEVEL_1]
   add G_DIGITS
   ld [_SCRN1 + $22 + T_LevelEnd - T_Level], a
   ldh a, [BOARD_LEVEL_0]
   add G_DIGITS
   ld [_SCRN1 + $23 + T_LevelEnd - T_Level], a
+
+  
+    ; draw ""MOVES text
+  ld hl, T_Moves
+  ld de, _SCRN1 + $2A
+  ld b, T_MovesEnd - T_Moves
+  call CopyDataT
+  
+  call MovesDrawText
   ret
 
 
@@ -132,6 +187,38 @@ Game_manageInputs:
   ret
 
 
+Game_managePause:
+  ldh a, [INPUT_N]
+  cp IN_START
+  jr nz, .skip_pause
+
+  ldh a, [PAUSE]
+  cp $00
+  jp nz, .unpause
+
+    ; pause
+  ld hl, _SCRN1 + $21
+  ld b, $12
+  call ClearData
+      ; draw "PAUSED" text
+  ld hl, T_Paused
+  ld de, _SCRN1 + $27
+  ld b, T_PausedEnd - T_Paused
+  call CopyDataT
+  
+  ld a, $01
+  jr .did_change_pause
+
+  .unpause
+  call GameDrawText
+  ld a, $00
+
+  .did_change_pause
+  ldh [PAUSE], a
+  .skip_pause
+  ret
+
+
 GameCheckWin:
   ldh a, [EMPTY_BLOCKS_R]
   ld b, a
@@ -151,12 +238,13 @@ GameCheckWin:
 
   jr nz, .jump_to_next_level
 
-  pop bc
-  jp WinJump
+  ld a, WIN_LAST
+  ldh [NEXT_LEVEL], a
+  jr .skip_win
 
   .jump_to_next_level
-  pop bc
-  jp GameFadeOutSetup
+  ld a, WIN_NEXT
+  ldh [NEXT_LEVEL], a
 
   .skip_win
   ret
@@ -180,16 +268,69 @@ GameFadeOutLoop:
 
   call ReadInput
   
-  ld hl, P_FadeOutB
+  ld hl, P_GameFadeOut
   call Fading
 
   ldh a, [FADE_C]
   or $00
   jr nz, GameFadeOutLoop
 
+  ldh a, [NEXT_LEVEL]
+  cp WIN_NEXT
+  jr z, .next_level
+
+  jp WinJump
+
+  .next_level
+
   jp GameSetup
+
+
+MovesDrawText:
+  ld hl, _SCRN1 + $30
+MovesDrawTextToHl:
+  ldh a, [SHIP_MOVES_3]
+  cp $00
+  jr z, .skip_last_digit
+  add G_DIGITS
+  dec hl
+  ld [hl+], a
+  .skip_last_digit
+  
+  ldh a, [SHIP_MOVES_2]
+  add G_DIGITS
+  ld [hl+], a
+  
+  ldh a, [SHIP_MOVES_1]
+  add G_DIGITS
+  ld [hl+], a
+  
+  ldh a, [SHIP_MOVES_0]
+  add G_DIGITS
+  ld [hl+], a
+
+  xor a ; ld a, $00
+  ldh [MOVES_UPDATE], a
+  ret
 
 
 T_Level:
 db "LEVEL"
 T_LevelEnd:
+
+T_Paused:
+db "PAUSED"
+T_PausedEnd:
+
+T_Moves:
+db "MOVES"
+T_MovesEnd:
+
+
+P_GameFadeOut:
+    db %00000000
+    db %01000000
+    db %10010001
+    db %11100100
+F_GameFadeOutEnd:
+
