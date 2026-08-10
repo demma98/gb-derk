@@ -6,7 +6,7 @@ INCLUDE "include/tiles/definitions/digits.inc"
 
 Section "Game", ROM0
 
-DEF MAX_LEVEL  EQU  10
+DEF MAX_LEVEL  EQU  14
 
 DEF NO_WIN    EQU $00
 DEF WIN_NEXT   EQU $01
@@ -18,8 +18,11 @@ EXPORT MovesDrawText
 EXPORT MovesDrawTextToHl
 
 GameStartFrom0:
+  halt  ; wait for vblank
+  
   xor a
-  ;ld a, $09
+    ; uncomment this to control which level to start in
+  ;ld a, 12
   
   ldh [BOARD_LEVEL], a
   xor a ; ld a, $00
@@ -29,7 +32,19 @@ GameStartFrom0:
   ldh [SHIP_MOVES_0], a
   
 GameStartFromX:
+
+  ld a, %00000000
+  ld [rBGP], a
+  ld [rOBP0], a
+  ld [rOBP1], a
+  ldh [PAUSE], a
+  
   call LevelDrawBackdrop
+
+    ; hide objs
+  xor a ; ld a, $00
+  ld [_OAMRAM + OAMA_Y], a
+  ld [_OAMRAM + OAMA_Y + (sizeof_OAM_ATTRS)], a
 
 GameSetup:
 
@@ -37,20 +52,14 @@ GameSetup:
   
   halt  ; wait for vblank
   
-  ld a, %00000000
-  ld [rBGP], a
-  ld [rOBP0], a
-  ld [rOBP1], a
-
-  ldh [PAUSE], a
-  
   call GameDrawDialogueBox
-  call GameSetOffsets
 
   ld a, $07
   ldh [WIN_X_OFF], a
   ld a, $7C
   ldh [WIN_Y_OFF], a
+  
+  call GameSetOffsets
 
   call GameSetGraphics
 
@@ -227,7 +236,12 @@ GameCheckWin:
   jp nz, .skip_win
 
   call ShipLogic
+
+  call ShipStopMoving ; count last move
+  halt ; wait for vblank
   call ShipDraw
+  call GameDrawText ; redraw the moves counter
+  
   call FillBlock_G
   call LevelClearBoard
 
@@ -261,7 +275,6 @@ GameFadeOutSetup:
 
   xor a ; ld a, $00
   ld [_OAMRAM], a ; hide ship
-  
 
 GameFadeOutLoop:
   halt

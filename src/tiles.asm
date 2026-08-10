@@ -23,6 +23,8 @@ TilesBG:
 INCLUDE "include/tiles/text.asm"
 INCLUDE "include/tiles/digits.asm"
 
+INCLUDE "include/tiles/logo.asm"
+
 TilesBGEnd:
 
 

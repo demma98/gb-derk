@@ -9,6 +9,7 @@ Section "Ship", ROM0
 EXPORT ShipSetup
 EXPORT ShipDraw
 EXPORT ShipLogic
+EXPORT ShipStopMoving
 
 DEF SHIP_STATIC  EQU $00
 DEF SHIP_UP    EQU $01
@@ -73,29 +74,29 @@ ShipMove:
   cp $00
   jp z, .skip_inputs
 
-  and IN_UP
-  jr z, .skip_up
+  cp IN_UP
+  jr nz, .skip_up
   ld a, SHIP_UP
   ldh [SHIP_DIRECTION], a
   .skip_up
 
   ld a, d
-  and IN_RIGHT
-  jr z, .skip_right
+  cp IN_RIGHT
+  jr nz, .skip_right
   ld a, SHIP_RIGHT
   ldh [SHIP_DIRECTION], a
   .skip_right
   
   ld a, d
-  and IN_DOWN
-  jr z, .skip_down
+  cp IN_DOWN
+  jr nz, .skip_down
   ld a, SHIP_DOWN
   ldh [SHIP_DIRECTION], a
   .skip_down
   
   ld a, d
-  and IN_LEFT
-  jr z, .skip_left
+  cp IN_LEFT
+  jr nz, .skip_left
   ld a, SHIP_LEFT
   ldh [SHIP_DIRECTION], a
   .skip_left
@@ -129,7 +130,7 @@ ShipMove:
   ld a, d
   dec a
   bit 7, a
-  jr nz, .stop_moving
+  jr nz, ShipStopMoving
   ldh [SHIP_Y_T], a
   jp .did_move
   .skip_move_up
@@ -149,7 +150,7 @@ ShipMove:
   inc a
   ld hl, BOARD_WIDTH
   cp [hl]
-  jr z, .stop_moving
+  jr z, ShipStopMoving
   ldh [SHIP_X_T], a
   jp .did_move
   .skip_move_right
@@ -169,7 +170,7 @@ ShipMove:
   inc a
   ld hl, BOARD_HEIGHT
   cp [hl]
-  jr z, .stop_moving
+  jr z, ShipStopMoving
   ldh [SHIP_Y_T], a
   jp .did_move
   .skip_move_down
@@ -189,7 +190,7 @@ ShipMove:
   ld a, e
   dec a
   bit 7, a
-  jr nz, .stop_moving
+  jr nz, ShipStopMoving
   ldh [SHIP_X_T], a
   jp .did_move
   .skip_move_left
@@ -205,7 +206,7 @@ ShipMove:
   ldh [SHIP_X_T], a
   ld a, d
   ldh [SHIP_Y_T], a
-  jr .stop_moving
+  jr ShipStopMoving
   .skip_return_to_position
 
   cp BLOCK_EMPTY
@@ -222,7 +223,7 @@ ShipMove:
 
   ret
   
-  .stop_moving
+ShipStopMoving:
   ld a, SHIP_STATIC
   ldh [SHIP_DIRECTION], a
 
