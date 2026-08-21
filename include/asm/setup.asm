@@ -1,3 +1,4 @@
+
 Setup:
     xor a ; ld a, $00
     ldh [rAUDENA], a   ; disable sound
@@ -11,6 +12,9 @@ Setup:
         ; reset stack
     ld sp, SP_INIT
 
+    xor a ; ld a, %00000000
+    ldh [rNR52], a ; turn off audio
+    
 SetupTileData:
     halt    ; wait vblank
 

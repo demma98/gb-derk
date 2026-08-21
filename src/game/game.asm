@@ -6,7 +6,7 @@ INCLUDE "include/tiles/definitions/digits.inc"
 
 Section "Game", ROM0
 
-DEF MAX_LEVEL  EQU  14
+DEF MAX_LEVEL  EQU  18
 
 DEF NO_WIN    EQU $00
 DEF WIN_NEXT   EQU $01
@@ -20,9 +20,9 @@ EXPORT MovesDrawTextToHl
 GameStartFrom0:
   halt  ; wait for vblank
   
-  xor a
+  xor a ; ld a, 0
     ; uncomment this to control which level to start in
-  ;ld a, 12
+  ;ld a, 13
   
   ldh [BOARD_LEVEL], a
   xor a ; ld a, $00
@@ -72,6 +72,8 @@ GameSetup:
 
   ld a, NO_WIN
   ldh [NEXT_LEVEL], a
+
+  call GameSoundSetup
 
 GameLoop:
   halt
@@ -261,6 +263,22 @@ GameCheckWin:
   ldh [NEXT_LEVEL], a
 
   .skip_win
+  ret
+
+
+GameSoundSetup:
+    ; general configurations
+  ld a, %10000000
+  ldh [rNR52], a ; turn on audio
+  ld a, %10001000
+  ldh [rNR51], a ; channel 4 on both channels
+  ld a, %01110111
+  ldh [rNR50], a ; configure panning
+
+    ; channel 4 off
+  xor a ; ld a, %00000000
+  ldh [rNR42], a
+  
   ret
 
 

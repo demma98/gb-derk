@@ -22,6 +22,7 @@ ShipSetup:
   ldh [SHIP_F], a
   ldh [SHIP_DIRECTION], a
   ldh [FILLED_BLOCKS], a
+  
   ld a, G_SHIP_BODY
   ldh [SHIP_T], a
 
@@ -44,6 +45,9 @@ ShipSetup:
   call ShipGetBlockAddr
   ld a, BLOCK_FILLED
   ld [hl], a
+
+    ; sound
+  call ShipSFX_Stop
   ret
 
 
@@ -130,7 +134,7 @@ ShipMove:
   ld a, d
   dec a
   bit 7, a
-  jr nz, ShipStopMoving
+  jp nz, ShipStopMoving
   ldh [SHIP_Y_T], a
   jp .did_move
   .skip_move_up
@@ -209,6 +213,7 @@ ShipMove:
   jr ShipStopMoving
   .skip_return_to_position
 
+    ; if the block is empty fill it
   cp BLOCK_EMPTY
   jp nz, .skip_fill_block
   ld a, BLOCK_FILLED
@@ -219,6 +224,9 @@ ShipMove:
   ld d, a
   call FillBlock
   .skip_fill_block
+    ; sound
+  call ShipSFX_Move
+  
   .skip_move
 
   ret
@@ -253,6 +261,10 @@ ShipStopMoving:
   ldh [SHIP_X_O], a
   ldh a, [SHIP_Y_T]
   ldh [SHIP_Y_O], a
+
+    ; sound
+  call ShipSFX_Stop
+
   ret
 
 
@@ -327,4 +339,75 @@ ShipGetBlockAddr:  ; get memory direction for the current block, return in [hl]
   add [hl]
   ld l, a
   ld h, wBOARD_DATA_H
+  ret
+
+ShipSFX_Move:
+  ld a, [SHIP_SFX_ON]
+  cp $01
+  jr z, .skip
+
+  ld a, $01
+  ldh [SHIP_SFX_ON], a
+
+    ; set length
+  ld a, %00011111
+  ldh [rNR41], a
+    ; set envelope
+  ld a, %11110110
+  ldh [rNR42], a
+    ; set frequency
+  ld a, %01101111
+  ldh [rNR43], a
+    ; trigger
+  ld a, %11000000
+  ldh [rNR44], a
+
+
+  .skip
+    ; panning
+  ldh a, [BOARD_WIDTH]
+  rra
+  ld b, a
+  rra
+  ld c, a
+  
+  ldh a, [SHIP_X_T]
+  cp b
+  jr nc, .skip_left
+
+  cp c
+  jr c, .skip_mid_left
+
+  ld a, %01010100
+  ldh [rNR50], a
+  jr .skip_pan
+
+  .skip_mid_left
+  ld a, %01110010
+  ldh [rNR50], a
+  jr .skip_pan
+  
+  
+  .skip_left
+
+  sub b
+  cp c
+  jr nc, .skip_mid_right
+
+  ld a, %01000101
+  ldh [rNR50], a
+  jr .skip_pan
+
+  .skip_mid_right
+  
+  ld a, %00100111
+  ldh [rNR50], a
+  
+  .skip_pan
+  ret
+
+ShipSFX_Stop:
+  xor a ; ld a, $00
+  ldh [SHIP_SFX_ON], a
+  ;ldh [rNR42], a
   ret
