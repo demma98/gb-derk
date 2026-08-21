@@ -12,6 +12,6 @@ https://demma98.itch.io/derk
 - can restart by pressing START+SELECT+B+A
 
 --- compile ---
-to compile you'll need rgbasm intalled, then it's as simple as
+to compile you'll need rgbasm installed, then it's as simple as
 >make
 
