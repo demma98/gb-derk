@@ -6,7 +6,7 @@ INCLUDE "include/tiles/definitions/digits.inc"
 
 Section "Game", ROM0
 
-DEF MAX_LEVEL  EQU  18
+DEF MAX_LEVEL  EQU  20
 
 DEF NO_WIN    EQU $00
 DEF WIN_NEXT   EQU $01
@@ -53,11 +53,7 @@ GameSetup:
   halt  ; wait for vblank
   
   call GameDrawDialogueBox
-
-  ld a, $07
-  ldh [WIN_X_OFF], a
-  ld a, $7C
-  ldh [WIN_Y_OFF], a
+  call GameCalcWinOffsets
   
   call GameSetOffsets
 
@@ -279,6 +275,25 @@ GameSoundSetup:
   xor a ; ld a, %00000000
   ldh [rNR42], a
   
+  ret
+
+
+GameCalcWinOffsets:
+  ld a, $07
+  ldh [WIN_X_OFF], a
+  ld a, $7C
+  ldh [WIN_Y_OFF], a
+
+  ldh a, [BOARD_HEIGHT]
+  cp 16
+  jr nz, .skip
+
+  ld a, $00
+  ldh [BOARD_Y_OFF], a
+  ld a, $80
+  ldh [WIN_Y_OFF], a
+
+  .skip
   ret
 
 
