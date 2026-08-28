@@ -1,4 +1,4 @@
---- itch.io ---
+--- browser version ---
 https://demma98.itch.io/derk
 
 --- features ---
