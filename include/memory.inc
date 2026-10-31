@@ -87,5 +87,11 @@ DEF SHIP_MOVES_1    EQU wSHIP_DATA + $0E
 DEF SHIP_MOVES_0    EQU wSHIP_DATA + $0F
 
 
-DEF wSOUND_DATA     EQU $FFE0
-DEF SHIP_SFX_ON     EQU wSOUND_DATA + $00 ; ship sfx is active
+DEF wSOUND_DATA     EQU $FFE0             ; sound work memory
+DEF wSFX_DATA       EQU wSOUND_DATA + $00 ; sfx work memory
+DEF SFX_LENGTH  EQU wSFX_DATA + $00 ; how many chunks are left ,0 = sfx off
+DEF SFX_SPEED   EQU wSFX_DATA + $01 ; $01-$0F = speed to read at, $00 = doesn't read anymore bytes
+DEF SFX_CHANNEL EQU wSFX_DATA + $02 ; $00 = square 0, $01 = square 1, $02 wave, $03 = noise, $0f = not in use
+DEF SFX_TIMER   EQU wSFX_DATA + $03 ; timer of speed
+DEF SFX_ADDR_H  EQU wSFX_DATA + $04 ; high byte of sfx address
+DEF SFX_ADDR_L  EQU wSFX_DATA + $05 ; low byte of sfx address

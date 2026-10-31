@@ -2,7 +2,7 @@
 https://demma98.itch.io/derk
 
 --- features ---
-- 18 different mazes
+- 20 different mazes
 - sound effects
 - animated title screen
 - ending screen with "total moves" counter
@@ -14,4 +14,3 @@ https://demma98.itch.io/derk
 --- compile ---
 to compile you'll need rgbasm installed, then it's as simple as
 >make
-

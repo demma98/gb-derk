@@ -342,26 +342,8 @@ ShipGetBlockAddr:  ; get memory direction for the current block, return in [hl]
   ret
 
 ShipSFX_Move:
-  ld a, [SHIP_SFX_ON]
-  cp $01
-  jr z, .skip
-
-  ld a, $01
-  ldh [SHIP_SFX_ON], a
-
-    ; set length
-  ld a, %00011111
-  ldh [rNR41], a
-    ; set envelope
-  ld a, %11110110
-  ldh [rNR42], a
-    ; set frequency
-  ld a, %01101111
-  ldh [rNR43], a
-    ; trigger
-  ld a, %11000000
-  ldh [rNR44], a
-
+  ld hl, SFX_SHIP_MOVE
+  call SFX_Set
 
   .skip
     ; panning
@@ -407,7 +389,7 @@ ShipSFX_Move:
   ret
 
 ShipSFX_Stop:
-  xor a ; ld a, $00
-  ldh [SHIP_SFX_ON], a
-  ;ldh [rNR42], a
+  call SFX_Stop
   ret
+
+INCLUDE "include/sound/ship.sfx"

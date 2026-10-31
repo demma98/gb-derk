@@ -1,0 +1,12 @@
+    ; ship move sfx
+SFX_SHIP_MOVE:
+    db $01  ; length in chunks
+    db $03  ; sfx config
+
+        ; only one chunk of bytes for the channel in this case
+    db %00011111    ; envelope lenght
+    db %11110110    ; envelope settings
+    db %01101111    ; set frequency/randomness
+    db %11000000    ; trigger
+SFX_SHIP_MOVE_END:
+

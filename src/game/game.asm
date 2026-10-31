@@ -95,6 +95,8 @@ GameLoop:
 
   call GameCheckWin
 
+  call SFX_Tick
+
   ldh a, [NEXT_LEVEL]
   cp NO_WIN
   jr z, .no_win

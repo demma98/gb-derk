@@ -42,7 +42,7 @@ FIX_TYPE_gbc	:= -C
 
 ASM_FLAGS	:= 
 LINK_FLAGS	:= -m $(DEBUG_DIR)/$(PROJECT_NAME).map -n $(DEBUG_DIR)/$(PROJECT_NAME).sym
-FIX_FLAGS	:= -v -p 0 -t "$(ROM_TITLE)" -n $(ROM_VERSION) --non-japanese -f lhg $(FIX_TYPE_$(PROJECT_TYPE))
+FIX_FLAGS	:= -p 0 -t "$(ROM_TITLE)" -n $(ROM_VERSION) --non-japanese -f lhg $(FIX_TYPE_$(PROJECT_TYPE))
 
 
 # find asm files
